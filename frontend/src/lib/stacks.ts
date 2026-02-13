@@ -1,13 +1,13 @@
 
 import { AppConfig, UserSession, showConnect } from "@stacks/connect";
 
-export const appConfig = new AppConfig(["store_write", "publish_data"]);
-
 // Lazy initialization to avoid SSR issues
 let userSession: UserSession | undefined;
+let appConfig: AppConfig | undefined;
 
 export function getUserSession() {
     if (!userSession) {
+        appConfig = new AppConfig(["store_write", "publish_data"]);
         userSession = new UserSession({ appConfig });
     }
     return userSession;
