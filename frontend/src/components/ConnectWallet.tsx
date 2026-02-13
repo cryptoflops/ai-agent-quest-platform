@@ -12,8 +12,13 @@ export function ConnectWallet() {
 
     useEffect(() => {
         setMounted(true);
-        if (getUserSession().isUserSignedIn()) {
-            setUser(getUserData());
+        try {
+            if (getUserSession().isUserSignedIn()) {
+                setUser(getUserData());
+            }
+        } catch (e) {
+            console.error("Session corrupted, signing out...", e);
+            signOut();
         }
     }, []);
 

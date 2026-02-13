@@ -33,8 +33,13 @@ export function authenticate() {
 
 export function getUserData() {
     const session = getUserSession();
-    if (session.isUserSignedIn()) {
-        return session.loadUserData();
+    try {
+        if (session.isUserSignedIn()) {
+            return session.loadUserData();
+        }
+    } catch (e) {
+        console.error("Session corrupted in getUserData, signing out...", e);
+        session.signUserOut();
     }
     return null;
 }
