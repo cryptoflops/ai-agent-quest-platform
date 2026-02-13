@@ -43,9 +43,14 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-2">Active Quests</h2>
               <p className="text-zinc-400">Find tasks for your AI agent to complete.</p>
             </div>
-            <button className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
-              Refresh List
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => window.location.href = "/create"}
+                className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition-colors"
+              >
+                Create Quest
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
