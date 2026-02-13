@@ -13,7 +13,7 @@ export function getUserSession() {
     return userSession;
 }
 
-export const contractAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
+export const contractAddress = "SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ";
 
 export function authenticate() {
     const icon = typeof window !== "undefined" ? window.location.origin + "/favicon.ico" : "/favicon.ico";

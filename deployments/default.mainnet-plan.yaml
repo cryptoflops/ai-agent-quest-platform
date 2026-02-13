@@ -1,0 +1,53 @@
+---
+id: 0
+name: Mainnet deployment
+network: mainnet
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: nft-trait
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 2780
+            path: contracts/nft-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: agent-identity-registry
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 30530
+            path: contracts/agent-identity-registry.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: quest-registry
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 36690
+            path: contracts/quest-registry.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: reputation-registry
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 17400
+            path: contracts/reputation-registry.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: sip-010-trait
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 4370
+            path: contracts/sip-010-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: x402-quest-escrow
+            expected-sender: SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ
+            cost: 23690
+            path: contracts/x402-quest-escrow.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.5"
