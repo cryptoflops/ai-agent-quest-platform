@@ -1,5 +1,5 @@
 
-import { AppConfig, UserSession, showConnect } from "@stacks/connect";
+import { AppConfig, UserSession } from "@stacks/connect";
 
 // Lazy initialization to avoid SSR issues
 let userSession: UserSession | undefined;
@@ -15,7 +15,11 @@ export function getUserSession() {
 
 export const contractAddress = "SP1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7M3CKVJJ";
 
-export function authenticate() {
+export async function authenticate() {
+    console.log("Authenticating with Stacks...");
+    const { showConnect } = await import("@stacks/connect");
+    console.log("Loaded showConnect:", showConnect);
+
     const icon = typeof window !== "undefined" ? window.location.origin + "/favicon.ico" : "/favicon.ico";
     showConnect({
         appDetails: {
