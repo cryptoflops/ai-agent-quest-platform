@@ -216,7 +216,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // Start server
 const app = express();
-app.use(cors());
+app.use(cors({
+    exposedHeaders: ['payment-required', 'payment-signature', 'payment-response']
+}));
 app.use(express.json());
 
 // Protect the MCP routes with x402-stacks middleware

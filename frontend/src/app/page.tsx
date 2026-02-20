@@ -3,6 +3,7 @@
 
 import dynamic from "next/dynamic";
 import { QuestCard } from "@/components/QuestCard";
+import { AgentPlayground } from "@/components/AgentPlayground";
 import { useState } from "react";
 
 const ConnectWallet = dynamic(
@@ -37,6 +38,8 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        <AgentPlayground />
+
         <section className="mb-12">
           <div className="flex justify-between items-end mb-6">
             <div>
