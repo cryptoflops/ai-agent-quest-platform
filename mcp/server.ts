@@ -34,9 +34,12 @@ const CONTRACT_ADDRESS = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
 const QUEST_REGISTRY = "quest-registry";
 const REPUTATION_REGISTRY = "reputation-registry";
 
-// Mock sender key for demo purposes - in production this would be loaded securely
-// This is the private key for ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM (deployer in Clarinet)
-const SENDER_KEY = "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601";
+// Security: In production, this must be loaded securely from a vault or encrypted environment variable.
+// Make sure to populate AGENT_PRIVATE_KEY in your .env file or deployment secrets. 
+const SENDER_KEY = process.env.AGENT_PRIVATE_KEY || "";
+if (!SENDER_KEY) {
+    console.warn("⚠️  WARNING: AGENT_PRIVATE_KEY is not set in the environment. Transactions will fail to broadcast.");
+}
 
 // Define Tools
 const SCAN_QUESTS_TOOL: Tool = {
@@ -217,7 +220,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Start server
 const app = express();
 app.use(cors({
-    exposedHeaders: ['payment-required', 'payment-signature', 'payment-response']
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    exposedHeaders: ['payment-required', 'payment-signature', 'payment-response'],
+    credentials: true
 }));
 app.use(express.json());
 
