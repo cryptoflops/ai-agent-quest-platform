@@ -4,25 +4,97 @@
 import dynamic from "next/dynamic";
 import { QuestCard } from "@/components/QuestCard";
 import { AgentPlayground } from "@/components/AgentPlayground";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchCallReadOnlyFunction, cvToValue, uintCV } from "@stacks/transactions";
+import { STACKS_MAINNET } from "@stacks/network";
+import { contractAddress, getUserData, getUserSession } from "@/lib/stacks";
+import { openContractCall } from "@stacks/connect";
 
 const ConnectWallet = dynamic(
   () => import("@/components/ConnectWallet").then((mod) => mod.ConnectWallet),
   { ssr: false }
 );
 
-// Mock data for initial UI
-const MOCK_QUESTS = [
-  { id: 1, title: "Analyze Market Data", reward: 100, reputation: 0, status: "OPEN" },
-  { id: 2, title: "Train Image Model", reward: 500, reputation: 10, status: "OPEN" },
-  { id: 3, title: "Validate Translation", reward: 50, reputation: 5, status: "IN_PROGRESS" },
-];
-
 export default function Home() {
-  const [quests, setQuests] = useState(MOCK_QUESTS);
+  const [quests, setQuests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAccept = (id: number) => {
-    alert(`Accepting quest ${id} (Integration pending)`);
+  useEffect(() => {
+    async function fetchQuests() {
+      try {
+        let id = 1;
+        const fetchedQuests = [];
+
+        while (true) {
+          try {
+            const result = await fetchCallReadOnlyFunction({
+              contractAddress: contractAddress,
+              contractName: "quest-registry",
+              functionName: "get-quest",
+              functionArgs: [uintCV(id)],
+              network: STACKS_MAINNET as any,
+              senderAddress: contractAddress,
+            });
+
+            const questData: any = cvToValue(result);
+            if (questData === null) {
+              break; // Hit the end of the quests
+            }
+
+            // Map Clarity statuses to strings
+            const statusMap = ["OPEN", "IN_PROGRESS", "COMPLETED", "EXPIRED"];
+            const statusCode = Number(questData.status.value);
+
+            fetchedQuests.push({
+              id: id,
+              title: questData.description.value,
+              reward: Number(questData['reward-amount'].value) / 1000000, // Convert microSTX to STX if needed, but assuming it was stored as whole STX based on current UI. Let's assume whole STX.
+              reputation: Number(questData['reputation-threshold'].value),
+              status: statusMap[statusCode] || "UNKNOWN"
+            });
+            id++;
+          } catch (e) {
+            console.error("Error fetching quest", id, e);
+            break;
+          }
+        }
+
+        setQuests(fetchedQuests.reverse());
+      } catch (error) {
+        console.error("Failed to fetch quests", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchQuests();
+  }, []);
+
+  const handleAccept = async (id: number) => {
+    if (!getUserSession().isUserSignedIn()) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+
+    try {
+      await openContractCall({
+        contractAddress,
+        contractName: "quest-registry",
+        functionName: "accept-quest",
+        functionArgs: [uintCV(id) as any],
+        network: STACKS_MAINNET as any,
+        onFinish: (data) => {
+          console.log("Transaction broadcasted:", data);
+          alert(`Accepting quest ${id} (Transaction ID: ${data.txId})`);
+        },
+        onCancel: () => {
+          console.log("Transaction cancelled.");
+        }
+      });
+    } catch (e: any) {
+      console.error(e);
+      alert("Error initiating contract call: " + e.message);
+    }
   };
 
   return (
@@ -57,17 +129,23 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {quests.map((quest) => (
-              <QuestCard
-                key={quest.id}
-                id={quest.id}
-                title={quest.title}
-                reward={quest.reward}
-                reputation={quest.reputation}
-                status={quest.status}
-                onAccept={() => handleAccept(quest.id)}
-              />
-            ))}
+            {loading ? (
+              <div className="text-zinc-500">Loading quests from Stacks mainnet...</div>
+            ) : quests.length === 0 ? (
+              <div className="text-zinc-500">No active quests found.</div>
+            ) : (
+              quests.map((quest) => (
+                <QuestCard
+                  key={quest.id}
+                  id={quest.id}
+                  title={quest.title}
+                  reward={quest.reward}
+                  reputation={quest.reputation}
+                  status={quest.status}
+                  onAccept={() => handleAccept(quest.id)}
+                />
+              ))
+            )}
           </div>
         </section>
 

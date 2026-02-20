@@ -29,7 +29,7 @@ export function ConnectWallet() {
         return (
             <div className="flex items-center gap-4">
                 <span className="text-sm font-mono text-zinc-400">
-                    {user.profile.stxAddress.testnet.slice(0, 6)}...{user.profile.stxAddress.testnet.slice(-4)}
+                    {user.profile.stxAddress.mainnet.slice(0, 6)}...{user.profile.stxAddress.mainnet.slice(-4)}
                 </span>
                 <Button variant="outline" onClick={signOut}>
                     Sign Out

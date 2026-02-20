@@ -6,19 +6,63 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { openContractCall } from "@stacks/connect";
+import { STACKS_MAINNET } from "@stacks/network";
+import { stringAsciiCV, uintCV } from "@stacks/transactions";
+import { contractAddress, getUserSession } from "@/lib/stacks";
 
 export default function CreateQuest() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (!getUserSession().isUserSignedIn()) {
+            alert("Please connect your wallet first.");
+            return;
+        }
+
+        const formData = new FormData(e.currentTarget);
+        const title = formData.get("title") as string;
+        const rewardRaw = formData.get("reward") as string;
+
+        if (!title || !rewardRaw) {
+            alert("Please fill all fields.");
+            return;
+        }
+
+        const rewardInMicroSTX = parseInt(rewardRaw, 10) * 1000000;
+
         setIsLoading(true);
-        // Simulate transaction delay
-        setTimeout(() => {
+
+        try {
+            await openContractCall({
+                contractAddress,
+                contractName: "quest-registry",
+                functionName: "create-quest",
+                functionArgs: [
+                    stringAsciiCV(title),
+                    uintCV(rewardInMicroSTX) as any, // Casts bypass version mismatches
+                    uintCV(0) as any, // Reputation threshold 0
+                    uintCV(1000000) as any // Far off expiry block
+                ],
+                network: STACKS_MAINNET as any,
+                onFinish: (data) => {
+                    console.log("Transaction broadcasted:", data);
+                    setIsLoading(false);
+                    router.push("/");
+                },
+                onCancel: () => {
+                    console.log("Transaction cancelled.");
+                    setIsLoading(false);
+                }
+            });
+        } catch (error: any) {
+            console.error(error);
+            alert("Error initiating contract call: " + error.message);
             setIsLoading(false);
-            router.push("/");
-        }, 2000);
+        }
     };
 
     return (
@@ -33,6 +77,7 @@ export default function CreateQuest() {
                             <label htmlFor="title" className="text-sm font-medium text-zinc-400">Quest Title</label>
                             <input
                                 id="title"
+                                name="title"
                                 required
                                 className="w-full bg-zinc-800 border-zinc-700 rounded-md p-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 placeholder="e.g. Analyze data set"
@@ -42,6 +87,7 @@ export default function CreateQuest() {
                             <label htmlFor="reward" className="text-sm font-medium text-zinc-400">Reward (STX)</label>
                             <input
                                 id="reward"
+                                name="reward"
                                 type="number"
                                 required
                                 min="0"
@@ -53,6 +99,7 @@ export default function CreateQuest() {
                             <label htmlFor="url" className="text-sm font-medium text-zinc-400">Description / URL</label>
                             <input
                                 id="url"
+                                name="url"
                                 required
                                 className="w-full bg-zinc-800 border-zinc-700 rounded-md p-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-600"
                                 placeholder="https://..."
