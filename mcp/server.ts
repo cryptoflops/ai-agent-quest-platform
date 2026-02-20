@@ -1,6 +1,12 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { paymentMiddleware } from "x402-stacks";
+
+dotenv.config();
 import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
@@ -209,9 +215,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 // Start server
-async function run() {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
-}
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-run().catch(console.error);
+// Protect the MCP routes with x402-stacks middleware
+const x402Middleware = paymentMiddleware({
+    payTo: process.env.CREATOR_WALLET_ADDRESS || "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+    amount: "1000", // 1000 microSTX (0.001 STX) per request
+    network: "testnet",
+    facilitatorUrl: "https://facilitator.stacksx402.com"
+});
+
+// Apply payment middleware to the MCP endpoints
+app.use("/sse", x402Middleware);
+app.use("/messages", x402Middleware);
+
+let transport: SSEServerTransport | null = null;
+
+app.get("/sse", async (req, res) => {
+    transport = new SSEServerTransport("/messages", res);
+    await server.connect(transport);
+});
+
+app.post("/messages", async (req, res) => {
+    if (transport) {
+        await transport.handlePostMessage(req, res);
+    } else {
+        res.status(503).send("Server not ready");
+    }
+});
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`MCP server running on port ${PORT}`);
+    console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
+    console.log(`Protected by x402-stacks payment middleware`);
+});
