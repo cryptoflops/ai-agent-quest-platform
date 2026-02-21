@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { openContractCall } from "@stacks/connect";
-import { STACKS_MAINNET } from "@stacks/network";
-import { stringAsciiCV, uintCV } from "@stacks/transactions";
+import { StacksMainnet } from "@stacks/network";
+import { stringAsciiCV, uintCV, cvToHex } from "@stacks/transactions";
 import { contractAddress, getUserSession } from "@/lib/stacks";
 
 export default function CreateQuest() {
@@ -37,17 +37,19 @@ export default function CreateQuest() {
         setIsLoading(true);
 
         try {
+            const args = [
+                stringAsciiCV(title),
+                uintCV(rewardInMicroSTX),
+                uintCV(0),
+                uintCV(1000000)
+            ];
+
             await openContractCall({
                 contractAddress,
                 contractName: "quest-registry",
                 functionName: "create-quest",
-                functionArgs: [
-                    stringAsciiCV(title),
-                    uintCV(rewardInMicroSTX) as any, // Casts bypass version mismatches
-                    uintCV(0) as any, // Reputation threshold 0
-                    uintCV(1000000) as any // Far off expiry block
-                ],
-                network: STACKS_MAINNET as any,
+                functionArgs: args.map(arg => cvToHex(arg)),
+                network: new StacksMainnet() as any,
                 onFinish: (data) => {
                     console.log("Transaction broadcasted:", data);
 

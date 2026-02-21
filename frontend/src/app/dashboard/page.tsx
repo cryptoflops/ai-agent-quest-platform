@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getUserSession, contractAddress } from "@/lib/stacks";
-import { fetchCallReadOnlyFunction, cvToValue, uintCV, standardPrincipalCV } from "@stacks/transactions";
-import { STACKS_MAINNET } from "@stacks/network";
+import { callReadOnlyFunction, cvToValue, uintCV, standardPrincipalCV } from "@stacks/transactions";
+import { StacksMainnet } from "@stacks/network";
 import { QuestCard } from "@/components/QuestCard";
 import { Lock, Wallet, Trophy, Target } from "lucide-react";
 
@@ -33,12 +33,12 @@ export default function Dashboard() {
         async function fetchDashboardData() {
             try {
                 // 1. Fetch Reputation
-                const repResult = await fetchCallReadOnlyFunction({
+                const repResult = await callReadOnlyFunction({
                     contractAddress: contractAddress,
                     contractName: "reputation-registry",
                     functionName: "get-reputation",
                     functionArgs: [standardPrincipalCV(userAddress!)], // Passing mapped user address
-                    network: STACKS_MAINNET as any,
+                    network: new StacksMainnet() as any,
                     senderAddress: userAddress!,
                 });
                 const repParsed: any = cvToValue(repResult);
@@ -54,12 +54,12 @@ export default function Dashboard() {
                 const fetchedQuests = [];
                 while (true) {
                     try {
-                        const result = await fetchCallReadOnlyFunction({
+                        const result = await callReadOnlyFunction({
                             contractAddress,
                             contractName: "quest-registry",
                             functionName: "get-quest",
                             functionArgs: [uintCV(id)],
-                            network: STACKS_MAINNET as any,
+                            network: new StacksMainnet() as any,
                             senderAddress: contractAddress,
                         });
 
