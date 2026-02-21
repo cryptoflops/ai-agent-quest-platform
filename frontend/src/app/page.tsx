@@ -42,10 +42,12 @@ export default function Home() {
               senderAddress: contractAddress,
             });
 
-            const questData: any = cvToValue(result);
-            if (questData === null) {
+            const parsedCv: any = cvToValue(result);
+            if (parsedCv === null || parsedCv.type === "none") {
               break; // Hit the end of the quests
             }
+
+            const questData = parsedCv.value;
 
             // Map Clarity statuses to strings
             const statusMap = ["OPEN", "IN_PROGRESS", "COMPLETED", "EXPIRED"];

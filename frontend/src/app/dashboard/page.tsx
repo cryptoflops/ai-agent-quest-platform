@@ -41,7 +41,9 @@ export default function Dashboard() {
                     network: STACKS_MAINNET as any,
                     senderAddress: userAddress!,
                 });
-                const repData: any = cvToValue(repResult);
+                const repParsed: any = cvToValue(repResult);
+                const repData = repParsed?.type === "some" ? repParsed.value : null;
+
                 setReputation({
                     score: repData ? Number(repData['total-score'].value) : 0,
                     quests: repData ? Number(repData['total-quests'].value) : 0
@@ -61,8 +63,10 @@ export default function Dashboard() {
                             senderAddress: contractAddress,
                         });
 
-                        const questData: any = cvToValue(result);
-                        if (questData === null) break;
+                        const parsedCv: any = cvToValue(result);
+                        if (parsedCv === null || parsedCv.type === "none") break;
+
+                        const questData = parsedCv.value;
 
                         // Check if the current user is the creator
                         if (questData.creator.value === userAddress) {

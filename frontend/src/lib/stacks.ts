@@ -1,5 +1,6 @@
 
-import { AppConfig, UserSession, showConnect } from "@stacks/connect";
+import { AppConfig, UserSession } from "@stacks/auth";
+import { showConnect } from "@stacks/connect";
 
 // Lazy initialization to avoid SSR issues
 let userSession: UserSession | undefined;

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
@@ -12,7 +12,7 @@
     "@noble/hashes": "^2.0.1",
     "@stacks/auth": "^7.3.1",
     "@stacks/common": "^7.3.1",
-    "@stacks/connect": "^7.3.1",
+    "@stacks/connect": "7.3.1",
     "@stacks/network": "^7.3.1",
     "@stacks/transactions": "^7.3.1",
     "axios": "^1.13.5",
