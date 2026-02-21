@@ -13,12 +13,20 @@ interface QuestProps {
 }
 
 export function QuestCard({ id, title, reward, reputation, status, onAccept }: QuestProps) {
+    const isPending = status.includes("PENDING");
+
+    const getBadgeVariant = () => {
+        if (status === "OPEN") return "default";
+        if (isPending) return "outline";
+        return "secondary";
+    };
+
     return (
         <Card className="bg-zinc-900 border-zinc-800 text-zinc-100">
             <CardHeader>
                 <div className="flex justify-between items-start">
                     <CardTitle className="text-lg font-bold">{title}</CardTitle>
-                    <Badge variant={status === "OPEN" ? "default" : "secondary"}>{status}</Badge>
+                    <Badge variant={getBadgeVariant()}>{status}</Badge>
                 </div>
             </CardHeader>
             <CardContent>
@@ -34,8 +42,13 @@ export function QuestCard({ id, title, reward, reputation, status, onAccept }: Q
                 </div>
             </CardContent>
             <CardFooter>
-                <Button className="w-full" onClick={onAccept} disabled={status !== "OPEN"}>
-                    {status === "OPEN" ? "Accept Quest" : "View Details"}
+                <Button
+                    className="w-full"
+                    onClick={onAccept}
+                    disabled={status !== "OPEN" && !isPending}
+                    variant={isPending ? "outline" : "default"}
+                >
+                    {status === "OPEN" ? "Accept Quest" : isPending ? "View on Explorer" : "View Details"}
                 </Button>
             </CardFooter>
         </Card>

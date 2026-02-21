@@ -50,7 +50,25 @@ export default function CreateQuest() {
                 network: STACKS_MAINNET as any,
                 onFinish: (data) => {
                     console.log("Transaction broadcasted:", data);
+
+                    try {
+                        const newPendingQuest = {
+                            id: Date.now(),
+                            title: title,
+                            reward: rewardRaw,
+                            reputation: 0,
+                            status: "PENDING (Mining)",
+                            txId: data.txId,
+                            createdAt: Date.now()
+                        };
+                        const existingPending = JSON.parse(localStorage.getItem('pendingQuests') || '[]');
+                        localStorage.setItem('pendingQuests', JSON.stringify([newPendingQuest, ...existingPending]));
+                    } catch (e) {
+                        console.error("Failed to save pending quest", e);
+                    }
+
                     setIsLoading(false);
+                    alert(`Transaction Broadcasted!\n\nTX ID: ${data.txId}\n\nNote: Stacks mainnet blocks take 10-30 minutes to mine. Your quest will appear as "PENDING" until confirmed.`);
                     router.push("/");
                 },
                 onCancel: () => {
@@ -66,7 +84,7 @@ export default function CreateQuest() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+        <div className="flex-1 flex items-center justify-center p-4 min-h-[calc(100vh-4rem)]">
             <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-zinc-100">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">Create New Quest</CardTitle>

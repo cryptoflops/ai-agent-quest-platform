@@ -10,16 +10,22 @@ import { STACKS_MAINNET } from "@stacks/network";
 import { contractAddress, getUserData, getUserSession } from "@/lib/stacks";
 import { openContractCall } from "@stacks/connect";
 
-const ConnectWallet = dynamic(
-  () => import("@/components/ConnectWallet").then((mod) => mod.ConnectWallet),
-  { ssr: false }
-);
-
 export default function Home() {
   const [quests, setQuests] = useState<any[]>([]);
+  const [pendingQuests, setPendingQuests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    try {
+      const storedPending = JSON.parse(localStorage.getItem('pendingQuests') || '[]');
+      // Automatically clean up quests older than 2 hours just in case
+      const validPending = storedPending.filter((q: any) => Date.now() - q.createdAt < 2 * 60 * 60 * 1000);
+      setPendingQuests(validPending);
+      localStorage.setItem('pendingQuests', JSON.stringify(validPending));
+    } catch (e) {
+      console.error("Error reading pending quests", e);
+    }
+
     async function fetchQuests() {
       try {
         let id = 1;
@@ -48,7 +54,7 @@ export default function Home() {
             fetchedQuests.push({
               id: id,
               title: questData.description.value,
-              reward: Number(questData['reward-amount'].value) / 1000000, // Convert microSTX to STX if needed, but assuming it was stored as whole STX based on current UI. Let's assume whole STX.
+              reward: Number(questData['reward-amount'].value) / 1000000,
               reputation: Number(questData['reputation-threshold'].value),
               status: statusMap[statusCode] || "UNKNOWN"
             });
@@ -98,17 +104,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-purple-500 selection:text-white">
-      <header className="border-b border-zinc-800 bg-black/50 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-tr from-purple-600 to-orange-500 rounded-lg"></div>
-            <h1 className="font-bold text-xl tracking-tight">QuestPlatform</h1>
-          </div>
-          <ConnectWallet />
-        </div>
-      </header>
-
+    <div className="selection:bg-purple-500 selection:text-white">
       <main className="container mx-auto px-4 py-8">
         <AgentPlayground />
 
@@ -131,37 +127,34 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {loading ? (
               <div className="text-zinc-500">Loading quests from Stacks mainnet...</div>
-            ) : quests.length === 0 ? (
+            ) : quests.length === 0 && pendingQuests.length === 0 ? (
               <div className="text-zinc-500">No active quests found.</div>
             ) : (
-              quests.map((quest) => (
-                <QuestCard
-                  key={quest.id}
-                  id={quest.id}
-                  title={quest.title}
-                  reward={quest.reward}
-                  reputation={quest.reputation}
-                  status={quest.status}
-                  onAccept={() => handleAccept(quest.id)}
-                />
-              ))
+              <>
+                {pendingQuests.map((quest) => (
+                  <QuestCard
+                    key={`pending-${quest.id}`}
+                    id={quest.txId ? quest.txId.slice(0, 6) : quest.id}
+                    title={quest.title}
+                    reward={quest.reward}
+                    reputation={quest.reputation}
+                    status={quest.status}
+                    onAccept={() => window.open(`https://explorer.hiro.so/txid/${quest.txId}?chain=mainnet`, "_blank")}
+                  />
+                ))}
+                {quests.map((quest) => (
+                  <QuestCard
+                    key={quest.id}
+                    id={quest.id}
+                    title={quest.title}
+                    reward={quest.reward}
+                    reputation={quest.reputation}
+                    status={quest.status}
+                    onAccept={() => handleAccept(quest.id)}
+                  />
+                ))}
+              </>
             )}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-6">Your Reputation</h2>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-            <div className="flex gap-8">
-              <div>
-                <p className="text-sm text-zinc-500 uppercase tracking-wider mb-1">Total Score</p>
-                <p className="text-4xl font-bold text-white">0</p>
-              </div>
-              <div>
-                <p className="text-sm text-zinc-500 uppercase tracking-wider mb-1">Quests Completed</p>
-                <p className="text-4xl font-bold text-white">0</p>
-              </div>
-            </div>
           </div>
         </section>
       </main>
