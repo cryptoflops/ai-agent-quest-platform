@@ -12,7 +12,7 @@ interface QuestProps {
     onAccept: () => void;
 }
 
-export function QuestCard({ id, title, reward, reputation, status, onAccept }: QuestProps) {
+export function QuestCard({ title, reward, reputation, status, onAccept }: QuestProps) {
     const isPending = status.includes("PENDING");
 
     const getBadgeVariant = () => {

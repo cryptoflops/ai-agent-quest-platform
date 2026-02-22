@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { wrapAxiosWithPayment } from "x402-stacks";
-import { getAddressFromPrivateKey } from "@stacks/transactions";
+import { getAddressFromPrivateKey, TransactionVersion } from "@stacks/transactions";
 import { bytesToHex } from "@stacks/common";
 
 const generateSecretKey = () => {
@@ -23,7 +23,7 @@ export function AgentPlayground() {
         const keyBytes = generateSecretKey();
         const hexString = bytesToHex(keyBytes);
         setPrivateKey(hexString);
-        addLog(`Generated temporary Agent Wallet: ${getAddressFromPrivateKey(hexString, "testnet")}`);
+        addLog(`Generated temporary Agent Wallet: ${getAddressFromPrivateKey(hexString, TransactionVersion.Testnet)}`);
     };
 
     const addLog = (msg: string) => {
@@ -48,7 +48,7 @@ export function AgentPlayground() {
             // Wrap it so it automatically handles 402 Payment Required responses
             wrapAxiosWithPayment(agentClient, {
                 privateKey: privateKey,
-                address: getAddressFromPrivateKey(privateKey, "testnet"),
+                address: getAddressFromPrivateKey(privateKey, TransactionVersion.Testnet),
                 network: "testnet"
             });
 

@@ -1,13 +1,12 @@
 
 "use client";
 
-import dynamic from "next/dynamic";
 import { QuestCard } from "@/components/QuestCard";
 import { AgentPlayground } from "@/components/AgentPlayground";
 import { useState, useEffect } from "react";
 import { callReadOnlyFunction, cvToValue, uintCV, cvToHex } from "@stacks/transactions";
 import { StacksMainnet } from "@stacks/network";
-import { contractAddress, getUserData, getUserSession } from "@/lib/stacks";
+import { contractAddress, getUserSession } from "@/lib/stacks";
 import { openContractCall } from "@stacks/connect";
 
 export default function Home() {

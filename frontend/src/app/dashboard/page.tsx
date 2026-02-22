@@ -82,7 +82,7 @@ export default function Dashboard() {
                             });
                         }
                         id++;
-                    } catch (e) {
+                    } catch {
                         break;
                     }
                 }

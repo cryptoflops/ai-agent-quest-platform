@@ -11,6 +11,7 @@ export function ConnectWallet() {
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
         try {
             if (getUserSession().isUserSignedIn()) {
