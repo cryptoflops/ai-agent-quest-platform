@@ -5,8 +5,7 @@ import { QuestCard } from "@/components/QuestCard";
 import { AgentPlayground } from "@/components/AgentPlayground";
 import { useState, useEffect } from "react";
 import { callReadOnlyFunction, cvToValue, uintCV, cvToHex } from "@stacks/transactions";
-import { StacksMainnet } from "@stacks/network";
-import { contractAddress, getUserSession } from "@/lib/stacks";
+import { getContractAddress, getStacksNetwork, getUserSession } from "@/lib/stacks";
 import { openContractCall } from "@stacks/connect";
 
 export default function Home() {
@@ -33,12 +32,12 @@ export default function Home() {
         while (true) {
           try {
             const result = await callReadOnlyFunction({
-              contractAddress,
+              contractAddress: getContractAddress(),
               contractName: "quest-registry",
               functionName: "get-quest",
               functionArgs: [uintCV(id)],
-              network: new StacksMainnet() as any,
-              senderAddress: contractAddress,
+              network: getStacksNetwork() as any,
+              senderAddress: getContractAddress(),
             });
 
             const parsedCv: any = cvToValue(result);
@@ -85,11 +84,11 @@ export default function Home() {
 
     try {
       await openContractCall({
-        contractAddress,
+        contractAddress: getContractAddress(),
         contractName: "quest-registry",
         functionName: "accept-quest",
         functionArgs: [cvToHex(uintCV(id))],
-        network: new StacksMainnet() as any,
+        network: getStacksNetwork() as any,
         onFinish: (data) => {
           console.log("Transaction broadcasted:", data);
           alert(`Accepting quest ${id} (Transaction ID: ${data.txId})`);

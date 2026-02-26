@@ -29,6 +29,18 @@ export function ConnectWallet() {
     if (user) {
         return (
             <div className="flex items-center gap-4">
+                <button
+                    onClick={() => {
+                        import("@/lib/stacks").then((mod) => {
+                            mod.setNetworkMode(mod.getNetworkMode() === "mainnet" ? "testnet" : "mainnet");
+                        });
+                    }}
+                    className="text-xs font-mono uppercase text-zinc-400 hover:text-white transition-colors"
+                >
+                    NET: <span className={user.profile.stxAddress.mainnet ? "text-amber-500" : "text-emerald-500"}>
+                        {typeof window !== 'undefined' ? (localStorage.getItem('stacks-network-mode') || 'mainnet') : 'mainnet'}
+                    </span> ⇄
+                </button>
                 <span className="text-sm font-mono text-zinc-400">
                     {user.profile.stxAddress.mainnet.slice(0, 6)}...{user.profile.stxAddress.mainnet.slice(-4)}
                 </span>

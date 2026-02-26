@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getUserSession, contractAddress } from "@/lib/stacks";
+import { getUserSession, getContractAddress, getStacksNetwork } from "@/lib/stacks";
 import { callReadOnlyFunction, cvToValue, uintCV, standardPrincipalCV } from "@stacks/transactions";
-import { StacksMainnet } from "@stacks/network";
 import { QuestCard } from "@/components/QuestCard";
 import { Lock, Wallet, Trophy, Target } from "lucide-react";
 
@@ -34,11 +33,11 @@ export default function Dashboard() {
             try {
                 // 1. Fetch Reputation
                 const repResult = await callReadOnlyFunction({
-                    contractAddress: contractAddress,
+                    contractAddress: getContractAddress(),
                     contractName: "reputation-registry",
                     functionName: "get-reputation",
                     functionArgs: [standardPrincipalCV(userAddress!)], // Passing mapped user address
-                    network: new StacksMainnet() as any,
+                    network: getStacksNetwork() as any,
                     senderAddress: userAddress!,
                 });
                 const repParsed: any = cvToValue(repResult);
@@ -55,12 +54,12 @@ export default function Dashboard() {
                 while (true) {
                     try {
                         const result = await callReadOnlyFunction({
-                            contractAddress,
+                            contractAddress: getContractAddress(),
                             contractName: "quest-registry",
                             functionName: "get-quest",
                             functionArgs: [uintCV(id)],
-                            network: new StacksMainnet() as any,
-                            senderAddress: contractAddress,
+                            network: getStacksNetwork() as any,
+                            senderAddress: getContractAddress(),
                         });
 
                         const parsedCv: any = cvToValue(result);

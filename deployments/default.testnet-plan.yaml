@@ -8,9 +8,27 @@ plan:
   batches:
     - id: 0
       transactions:
-
-
-
+        - contract-publish:
+            contract-name: nft-trait
+            expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
+            cost: 2780
+            path: contracts/nft-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: agent-identity-registry
+            expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
+            cost: 30530
+            path: contracts/agent-identity-registry.clar
+            anchor-block-only: true
+            clarity-version: 2
+        - contract-publish:
+            contract-name: quest-registry
+            expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
+            cost: 36690
+            path: contracts/quest-registry.clar
+            anchor-block-only: true
+            clarity-version: 2
         - contract-publish:
             contract-name: reputation-registry
             expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
@@ -18,7 +36,13 @@ plan:
             path: contracts/reputation-registry.clar
             anchor-block-only: true
             clarity-version: 2
-
+        - contract-publish:
+            contract-name: sip-010-trait
+            expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
+            cost: 4370
+            path: contracts/sip-010-trait.clar
+            anchor-block-only: true
+            clarity-version: 2
         - contract-publish:
             contract-name: x402-quest-escrow
             expected-sender: ST1TN1ERKXEM2H9TKKWGPGZVNVNEKS92M7MAMP23P
