@@ -26,21 +26,25 @@ export function ConnectWallet() {
     if (!mounted) return <Button disabled>Loading...</Button>;
 
 
+    const networkToggle = (
+        <button
+            onClick={() => {
+                import("@/lib/stacks").then((mod) => {
+                    mod.setNetworkMode(mod.getNetworkMode() === "mainnet" ? "testnet" : "mainnet");
+                });
+            }}
+            className="text-xs font-mono uppercase text-zinc-400 hover:text-white transition-colors"
+        >
+            NET: <span className={typeof window !== 'undefined' ? (localStorage.getItem('stacks-network-mode') === 'testnet' ? "text-emerald-500" : "text-amber-500") : "text-amber-500"}>
+                {typeof window !== 'undefined' ? (localStorage.getItem('stacks-network-mode') || 'mainnet') : 'mainnet'}
+            </span> ⇄
+        </button>
+    );
+
     if (user) {
         return (
             <div className="flex items-center gap-4">
-                <button
-                    onClick={() => {
-                        import("@/lib/stacks").then((mod) => {
-                            mod.setNetworkMode(mod.getNetworkMode() === "mainnet" ? "testnet" : "mainnet");
-                        });
-                    }}
-                    className="text-xs font-mono uppercase text-zinc-400 hover:text-white transition-colors"
-                >
-                    NET: <span className={user.profile.stxAddress.mainnet ? "text-amber-500" : "text-emerald-500"}>
-                        {typeof window !== 'undefined' ? (localStorage.getItem('stacks-network-mode') || 'mainnet') : 'mainnet'}
-                    </span> ⇄
-                </button>
+                {networkToggle}
                 <span className="text-sm font-mono text-zinc-400">
                     {user.profile.stxAddress.mainnet.slice(0, 6)}...{user.profile.stxAddress.mainnet.slice(-4)}
                 </span>
@@ -52,8 +56,11 @@ export function ConnectWallet() {
     }
 
     return (
-        <Button onClick={() => authenticate()}>
-            Connect Wallet
-        </Button>
+        <div className="flex items-center gap-4">
+            {networkToggle}
+            <Button onClick={() => authenticate()}>
+                Connect Wallet
+            </Button>
+        </div>
     );
 }
