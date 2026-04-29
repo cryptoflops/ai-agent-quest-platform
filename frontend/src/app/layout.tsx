@@ -18,11 +18,18 @@ export const metadata: Metadata = {
   description: "A decentralized marketplace for AI interactions",
 };
 
+import { authenticate } from '../lib/stacks-integration';
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Stacks wallet integration registration
+  if (typeof window !== 'undefined') {
+    console.info('Stacks connection layer loaded:', authenticate);
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
