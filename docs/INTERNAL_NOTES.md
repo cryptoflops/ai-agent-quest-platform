@@ -4,3 +4,4 @@
 - Cleaned up some dead code in the utility helpers.
 - Verified backward compatibility with older Stacks API responses.
 - Cleaned up some dead code in the utility helpers.
+- Need to look into optimizing the context providers later.
