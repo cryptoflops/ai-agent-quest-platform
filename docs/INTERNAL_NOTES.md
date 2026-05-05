@@ -9,3 +9,4 @@
 - Pushing work-in-progress state before context switch.
 - Cleaned up some dead code in the utility helpers.
 - Verified backward compatibility with older Stacks API responses.
+- Need to look into optimizing the context providers later.
