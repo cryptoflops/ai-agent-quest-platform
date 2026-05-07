@@ -15,3 +15,4 @@
 - Need to look into optimizing the context providers later.
 - Investigated rendering jitter on mobile layout.
 - Testing new layout constraints for edge cases.
+- Need to look into optimizing the context providers later.
