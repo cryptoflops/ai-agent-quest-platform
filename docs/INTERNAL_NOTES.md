@@ -12,3 +12,4 @@
 - Need to look into optimizing the context providers later.
 - Looking into potential race conditions during state hydration.
 - Investigated rendering jitter on mobile layout.
+- Need to look into optimizing the context providers later.
