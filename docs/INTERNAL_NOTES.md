@@ -21,3 +21,4 @@
 - Pushing work-in-progress state before context switch.
 - Fixed a minor typo in the internal documentation.
 - Pushing work-in-progress state before context switch.
+- Reviewed Clarity contract read-only functions. The response parsing handles optional values correctly.
