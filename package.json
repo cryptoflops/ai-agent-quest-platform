@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@stacks/auth": "^7.3.1",
+    "@stacks/auth": "^7.4.0",
     "@stacks/clarinet-sdk": "^3.9.0",
     "@stacks/common": "^7.3.1",
     "@stacks/connect": "^8.2.4",
