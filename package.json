@@ -1,9 +1,8 @@
 {
-  "name": "ai-agent-quest-platform-tests",
+  "name": "@cryptoflops/ai-agent-quest-platform",
   "version": "1.0.0",
   "description": "Run unit tests on this project.",
   "type": "module",
-  "private": true,
   "scripts": {
     "test": "vitest run",
     "test:report": "vitest run -- --coverage --costs",
@@ -25,5 +24,8 @@
     "tailwind-merge": "^3.4.0",
     "vitest": "^4.0.7",
     "vitest-environment-clarinet": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
